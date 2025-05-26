@@ -11,9 +11,12 @@ import com.dev.habity.View.Navigation.Routes.Routes
 import com.dev.habity.View.Screens.AddHabitScreen
 
 import com.dev.habity.View.Screens.HomeScreen
+import com.dev.habity.ViewModel.HabitDbViewmodel
 
 @Composable
-fun NavGraph(modifier: Modifier = Modifier) {
+fun NavGraph(
+    habitDbViewmodel: HabitDbViewmodel
+) {
 
     val navController = rememberNavController()
 
@@ -25,7 +28,8 @@ fun NavGraph(modifier: Modifier = Modifier) {
             HomeScreen(
                 onClick = {
                     navController.navigate(Routes.AddHabitScreen.routes)
-                }
+                },
+                habitDbViewmodel = habitDbViewmodel
             )
         }
 

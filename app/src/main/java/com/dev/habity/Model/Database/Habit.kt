@@ -13,6 +13,7 @@ import java.sql.Date
 
 @Entity(tableName = "habits")
 data class Habit(
+    
     @PrimaryKey(autoGenerate = true)
     val id : Long,  // id of the habit & also primary key
     val title : String, // title or name of the habit
@@ -43,7 +44,6 @@ data class Completion(
     val id : Long, // id of the completion of the habit
     val habitId : String, // habit id for the foreign key
     val date: Long, // date where the habit started
-    val timeZoneOffset : Int = 330, // may be
     val amountOfCompletions : Int = 0 // amount of completion of the habit
 )
 

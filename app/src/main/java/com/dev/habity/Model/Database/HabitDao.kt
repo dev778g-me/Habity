@@ -15,7 +15,7 @@ import java.sql.Date
 interface HabitDao {
     // Get all habits
      @Query("SELECT * FROM habits ORDER BY createdAt DESC")
-     fun getAllHabits(): Flow<List<Habit>>
+     fun getAllHabits(): LiveData<List<Habit>>
 
     @Upsert()
     suspend fun insertHabit(habit: Habit)
