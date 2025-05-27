@@ -2,7 +2,10 @@ package com.dev.habity.di.module
 
 import android.content.Context
 import androidx.room.Room
+import com.dev.habity.Model.Database.CompletionDao
+import com.dev.habity.Model.Database.HabitDao
 import com.dev.habity.Model.Database.HabitDatabase
+import com.dev.habity.Model.Repo.HabitRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +19,7 @@ import kotlin.concurrent.Volatile
 class HabityModule(
 
 ) {
-
+    // providing the habit database
     @Singleton
     @Provides
     fun provideHabitDatabase(
@@ -30,5 +33,30 @@ class HabityModule(
 
     }
 
+    // providing the habit dao
+    @Provides
+    fun provideHabitDao(habitDatabase: HabitDatabase) : HabitDao{
+        return habitDatabase.HabitDao()
+    }
+
+
+    // provides the completion habit dao
+    @Provides
+    fun provideCompletionsDao(habitDatabase: HabitDatabase) : CompletionDao {
+        return habitDatabase.CompletionDao()
+    }
+
+
+    // provides the habit repository
+    @Provides
+    fun provideRepository(
+        habitDao: HabitDao,
+        completionDao: CompletionDao
+    ) : HabitRepo {
+        return HabitRepo(
+            habitDao = habitDao,
+            completionDao = completionDao
+        )
+    }
 
 }

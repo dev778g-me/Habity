@@ -42,7 +42,7 @@ data class Habit(
 data class Completion(
     @PrimaryKey(autoGenerate = true)
     val id : Long, // id of the completion of the habit
-    val habitId : String, // habit id for the foreign key
+    val habitId : Long, // habit id for the foreign key
     val date: Long, // date where the habit started
     val amountOfCompletions : Int = 0 // amount of completion of the habit
 )

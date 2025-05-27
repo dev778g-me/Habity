@@ -18,11 +18,10 @@ interface HabitDao {
      fun getAllHabits(): LiveData<List<Habit>>
 
     @Upsert()
-    suspend fun insertHabit(habit: Habit)
+    suspend fun insertHabit(habit: Habit) : Long
 
     @Delete
     suspend fun deleteHabit(habit: Habit)
-
 
 }
 
@@ -36,11 +35,11 @@ interface CompletionDao{
 
     // Get all completions for a specific habit
     @Query("SELECT * FROM completions WHERE habitId = :habitId ORDER BY date DESC ")
-    fun getCompletionForHabit(habitId: String) : Flow<List<Completion>>
+    fun getCompletionForHabit(habitId: Long) : LiveData<List<Completion>>
 
     //get completion for a specific date
     @Query("SELECT * FROM completions WHERE habitId = :habitId AND date =:date LIMIT 1")
-    suspend fun getCompletionForDate(habitId: String,date: Long) : Completion ?
+    suspend fun getCompletionForDate(habitId: Long,date: Long) : Completion ?
 
     //delete all the completions
     @Delete

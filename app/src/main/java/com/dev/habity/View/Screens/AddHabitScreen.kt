@@ -128,6 +128,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.dev.habity.Model.Database.Completion
 
 import com.dev.habity.Model.Database.Habit
 import com.dev.habity.Model.Database.HabitDatabase
@@ -151,13 +152,9 @@ import kotlinx.coroutines.launch
 fun AddHabitScreen(
     modifier: Modifier = Modifier,
     onNavigation: () -> Unit
-
-
 ) {
-    //val db = HabitDatabase.getDatabase(context = LocalContext.current)
     val viewmodel : HabitDbViewmodel = hiltViewModel()
-    val habitDao =  viewmodel.habitDao
-      val context = LocalContext.current
+    val context = LocalContext.current
     val hazeState = rememberHazeState()
 
 
@@ -354,7 +351,8 @@ fun AddHabitScreen(
                 }
                 item {
                     Row (
-                        modifier = modifier.fillMaxWidth()
+                        modifier = modifier
+                            .fillMaxWidth()
                             .padding(vertical = 4.dp)
                     ){
                         Card (
@@ -565,26 +563,18 @@ fun AddHabitScreen(
                     )
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-
-
-
             ) {
                 val colorCode = selectedColor.value.toArgb()
 
                Button(
-                  enabled = isEmpty,
-
+                   enabled = isEmpty,
                    modifier = modifier
                        .fillMaxWidth()
                        .padding(horizontal = 16.dp),
                    onClick = {
                        val iconName = selectedIcon.value
-                       println(iconName)
                        val colorCode = selectedColor.value.toArgb()
-                       println(colorCode)
                        val  categoryName = selectedChips.value
-                       println(categoryName)
-                       //val categoryNames = selectedChips.filter { it.value }.keys.toList()
 
                        val newHabit = Habit(
                            title = title,
@@ -595,14 +585,15 @@ fun AddHabitScreen(
                            icon = selectedIcon.value,
                            createdAt = System.currentTimeMillis(),
                        )
-                       coroutineScope.launch(Dispatchers.IO) {
-                           habitDao.insertHabit(
-                               newHabit
-                           )
-                       }
 
-                       Toast.makeText(context, "Habit added successfully", Toast.LENGTH_SHORT)
-                           .show()
+                       viewmodel.insertHabitWithCompletions(
+                           habit = newHabit
+                       )
+                       print("the habit id ${newHabit.id}")
+                       Toast.makeText(
+                           context, "Habit added successfully", Toast.LENGTH_SHORT
+                       ).show()
+
                        onNavigation.invoke()
                    }
                ) {
