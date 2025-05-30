@@ -6,6 +6,7 @@ import com.dev.habity.Model.Database.CompletionDao
 import com.dev.habity.Model.Database.HabitDao
 import com.dev.habity.Model.Database.HabitDatabase
 import com.dev.habity.Model.Repo.HabitRepo
+import com.dev.habity.service.notification.HabityNotificationService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,6 +57,16 @@ class HabityModule(
         return HabitRepo(
             habitDao = habitDao,
             completionDao = completionDao
+        )
+    }
+
+    // provides the notification service
+    @Provides
+    fun providesNotificationService (
+        @ApplicationContext context: Context
+    ) : HabityNotificationService {
+        return HabityNotificationService(
+            context = context
         )
     }
 

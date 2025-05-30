@@ -12,10 +12,12 @@ import com.dev.habity.View.Screens.AddHabitScreen
 
 import com.dev.habity.View.Screens.HomeScreen
 import com.dev.habity.ViewModel.HabitDbViewmodel
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @Composable
 fun NavGraph(
-    habitDbViewmodel: HabitDbViewmodel
+    habitDbViewmodel: HabitDbViewmodel,
+    @ApplicationContext context: android.content.Context,
 ) {
 
     val navController = rememberNavController()
@@ -29,7 +31,8 @@ fun NavGraph(
                 onClick = {
                     navController.navigate(Routes.AddHabitScreen.routes)
                 },
-                habitDbViewmodel = habitDbViewmodel
+                context = context
+
             )
         }
 

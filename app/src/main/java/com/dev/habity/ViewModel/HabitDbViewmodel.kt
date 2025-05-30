@@ -1,5 +1,6 @@
 package com.dev.habity.ViewModel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import com.dev.habity.Model.Database.Completion
 import com.dev.habity.Model.Database.Habit
 import com.dev.habity.Model.Database.HabitDatabase
 import com.dev.habity.Model.Repo.HabitRepo
+import com.dev.habity.service.notification.HabityNotificationService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -16,10 +18,17 @@ import java.lang.Exception
 import javax.inject.Inject
 @HiltViewModel
 class HabitDbViewmodel @Inject constructor(
-  private val habitRepo: HabitRepo
+  private val habitRepo: HabitRepo,
+  private val habityNotificationService: HabityNotificationService
 ) : ViewModel(){
 
     val allHabit : LiveData<List<Habit>> = habitRepo.allHabits
+    fun getAllCompletions(habitId: Long): LiveData<List<Completion>> {
+        return habitRepo.fetchCompletions(
+            habitId = habitId
+        )
+        print(habitRepo.fetchCompletions(habitId).value)
+    }
      // function to get all the habits
 
 //    fun fetchCompletions(habitId: Long) : LiveData<List<Completion>> {
@@ -77,11 +86,24 @@ class HabitDbViewmodel @Inject constructor(
     }
 
 
-    fun getCompletions(habitId: Long){
-        viewModelScope.launch(Dispatchers.IO) {
-            habitRepo.fetchCompletions(
-                habitId = habitId
-            )
-        }
+    fun getCompletions(habitId: Long) : LiveData<List<Completion>>{
+        return habitRepo.fetchCompletions(
+            habitId = habitId
+        )
+    }
+
+
+
+    // function to show the notification
+    fun showNotification(
+        context: Context
+    ) {
+       try {
+           habityNotificationService.showNotification(
+               context
+           )
+       }catch (e: kotlin.Exception){
+           println(e.message)
+       }
     }
 }

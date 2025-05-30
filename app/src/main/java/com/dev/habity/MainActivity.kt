@@ -30,7 +30,8 @@ class MainActivity : ComponentActivity() {
             val viewmodel : HabitDbViewmodel = hiltViewModel()
             HabityTheme{
                 NavGraph(
-                    viewmodel
+                    viewmodel,
+                    context = this
                 )
             }
         }

@@ -21,6 +21,7 @@ data class Habit(
     val category : String, // category of the habit
     val color: String?, // may be we can add color
     val icon : String?, // may be i can add icon (but i will need some type converters ..)
+    val numberOfCompletion: Int,
     val createdAt : Long = System.currentTimeMillis()  // time where the habit is created
 )
 

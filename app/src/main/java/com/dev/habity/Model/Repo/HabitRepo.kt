@@ -1,6 +1,7 @@
 package com.dev.habity.Model.Repo
 
 import android.content.Context
+import androidx.compose.ui.input.pointer.PointerId
 import androidx.lifecycle.LiveData
 import com.dev.habity.Model.Database.Completion
 import com.dev.habity.Model.Database.CompletionDao
@@ -40,8 +41,8 @@ class HabitRepo @Inject constructor (
     // function to get and fetch all the completions for a specific habits
 
 
-    suspend fun fetchCompletions(habitId: Long) : LiveData<List<Completion>> = withContext(Dispatchers.IO) {
-      return@withContext completionDao.getCompletionForHabit(
+    fun fetchCompletions(habitId: Long) : LiveData<List<Completion>>{
+        return completionDao.getCompletionForHabit(
             habitId = habitId
         )
     }

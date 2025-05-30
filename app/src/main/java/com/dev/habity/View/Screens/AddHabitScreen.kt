@@ -110,6 +110,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 
 import androidx.compose.runtime.mutableStateOf
@@ -124,7 +125,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -153,6 +156,10 @@ fun AddHabitScreen(
     modifier: Modifier = Modifier,
     onNavigation: () -> Unit
 ) {
+
+    // variable for thr haptics
+    val haptics = LocalHapticFeedback.current
+
     val viewmodel : HabitDbViewmodel = hiltViewModel()
     val context = LocalContext.current
     val hazeState = rememberHazeState()
@@ -215,7 +222,7 @@ fun AddHabitScreen(
     val selectedDays = remember { mutableStateMapOf<String, Boolean>() }
     val selectedColor = remember { mutableStateOf(colorOptions[0]) }
     val selectedIcon = remember { mutableStateOf(habitIconMap.keys.first()) }
-    var completion by remember { mutableStateOf(1) }
+    var numberOfCompletion by remember { mutableIntStateOf(1) }
     val isEmpty by remember(title,description) { mutableStateOf(title.isNotEmpty() && description.isNotEmpty()) }
 
     val coroutineScope = rememberCoroutineScope()
@@ -255,6 +262,7 @@ fun AddHabitScreen(
 
     ) {
         innerPadding ->
+
         Box(
             modifier = modifier
                 .fillMaxSize()
@@ -366,22 +374,22 @@ fun AddHabitScreen(
                                     horizontal = 20.dp
                                 ),
                                 style = MaterialTheme.typography.labelLarge,
-                                text = "$completion/day"
+                                text = "$numberOfCompletion/day"
                             )
 
                         }
                         FilledTonalIconButton(
-                            enabled = completion != 1,
+                            enabled = numberOfCompletion != 1,
 
                             onClick = {
-                            if (completion>1){
-                                completion --
+                            if (numberOfCompletion>1){
+                                numberOfCompletion --
                             }
                         }) {
                             Icon(imageVector = Icons.Default.Remove, contentDescription = null)
                         }
                         FilledTonalIconButton(onClick = {
-                            completion ++
+                            numberOfCompletion ++
                         }) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = null)
                         }
@@ -583,17 +591,21 @@ fun AddHabitScreen(
                            category = categoryName,
                            color = colorCode.toString(),
                            icon = selectedIcon.value,
+                           numberOfCompletion = numberOfCompletion,
                            createdAt = System.currentTimeMillis(),
                        )
 
-                       viewmodel.insertHabitWithCompletions(
+                       viewmodel.insertHabit(
                            habit = newHabit
                        )
+
                        print("the habit id ${newHabit.id}")
                        Toast.makeText(
                            context, "Habit added successfully", Toast.LENGTH_SHORT
                        ).show()
-
+                          haptics.performHapticFeedback(
+                              hapticFeedbackType = HapticFeedbackType.Confirm
+                          )
                        onNavigation.invoke()
                    }
                ) {
@@ -641,7 +653,7 @@ fun AddHabitScreen(
                                         Text(text = name)
                                     },
                                     leadingIcon = {
-                                        Icon(imageVector = chip.value ?: Icons.Default.Description, contentDescription = null,
+                                        Icon(imageVector = chip.value, contentDescription = null,
                                             Modifier.size(InputChipDefaults.IconSize))
                                     }
                                 )
