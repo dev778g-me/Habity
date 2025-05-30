@@ -109,6 +109,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -136,6 +137,7 @@ import com.dev.habity.Model.Database.Completion
 import com.dev.habity.Model.Database.Habit
 import com.dev.habity.Model.Database.HabitDatabase
 import com.dev.habity.ViewModel.HabitDbViewmodel
+import com.dev.habity.ViewModel.HabityStateViewModel
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeChild
@@ -161,72 +163,36 @@ fun AddHabitScreen(
     val haptics = LocalHapticFeedback.current
 
     val viewmodel : HabitDbViewmodel = hiltViewModel()
+    val habityStateViewModel : HabityStateViewModel = hiltViewModel()
     val context = LocalContext.current
     val hazeState = rememberHazeState()
 
 
-    val options = listOf("Daily", "Weekly", "Monthly")
+    // State management for the UI
+    // variable to manage the habit name state
+    val habitName by habityStateViewModel.habitName.collectAsState()
+    // variable to manage the habit description state
+    val habitDescription by habityStateViewModel.habitDescription.collectAsState()
+    // variable to check is the habit name ans description are empty or not
+    val canAddHabit by habityStateViewModel.canAddHabit.collectAsState()
+    // variable to manage state of the number of completions
+    val numberOfCompletions by habityStateViewModel.numberOFCompletion.collectAsState()
+    // variable to manage state of the category
+    val categoryIconMap = habityStateViewModel.categoryIconMap
+     // variable to manage the selected category
+    val selectedCategory by habityStateViewModel.habitCategory.collectAsState()
+
+    // variable to mange the icon for tha habit
+    val habitIcon = habityStateViewModel.habitIconMap
+    val selectedIcon by habityStateViewModel.habitIcon.collectAsState()
+
+    // variable to manage the streak goal
+    val streakGoalList = habityStateViewModel.streakOptions
+    val selectedStreakGoal by habityStateViewModel.streakGoal.collectAsState()
+
     val remainderDays = listOf("All" ,"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
-    val colorOptions = listOf(
-        Color(0xFFFFDBD1), // Soft Peach
-        Color(0xFFcdeda3), // Light Green
-        Color(0xFFbcece7), // Soft Cyan
-        Color(0xFFeee2bc), // Warm Beige
-        Color(0xFFffd6fe), // Pink Lavender
-        Color(0xFFa2eeff), // Baby Blue
-        Color(0xFFe0e0ff), // Lavender Gray
-        Color(0xFF74649f), // Dusty Purple
-        Color(0xFFFFC1CC), // Pastel Pink
-        Color(0xFFA0E7E5), // Aquamarine
-        Color(0xFFFFF6C3), // Light Yellow
-        Color(0xFFB5EAD7), // Mint Green
-        Color(0xFFC7CEEA)  // Periwinkle
-    )
-    val habitIconMap = mapOf(
-        "FitnessCenter" to Icons.Default.FitnessCenter,
-        "MenuBook" to Icons.Default.MenuBook,
-        "SelfImprovement" to Icons.Default.SelfImprovement,
-        "DirectionsRun" to Icons.Default.DirectionsRun,
-        "Bedtime" to Icons.Default.Bedtime,
-        "Spa" to Icons.Default.Spa,
-        "SmokingRooms" to Icons.Default.SmokingRooms,
-        "EmojiEvents" to Icons.Default.EmojiEvents,
-        "AccessibilityNew" to Icons.Default.AccessibilityNew,
-        "Height" to Icons.Default.Height,
-        "Escalator" to Icons.Default.Escalator,
-        "TrendingUp" to Icons.Default.TrendingUp,
-        "Timeline" to Icons.Default.Timeline,
-        "MonitorWeight" to Icons.Default.MonitorWeight,
-        "Straighten" to Icons.Default.Straighten,
-        "Flag" to Icons.Default.Flag,
-    )
-    val newCategory = mapOf(
-        "Health" to Icons.Default.Favorite,
-        "Study" to Icons.Default.School,
-        "Personal" to Icons.Default.Person,
-        "Hobby" to Icons.Default.EmojiEmotions,
-        "Music" to Icons.Default.LibraryMusic,
-        "Coding" to Icons.Default.Code,
-        "Reading" to Icons.Default.MenuBook,
-        "Diet" to Icons.Default.EmojiFoodBeverage,
-        "Other" to Icons.Default.MoreHoriz,
-
-        )
-
-
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
     var bottomSheetVisible by remember { mutableStateOf(false) }
-
-    val selectedChips = remember { mutableStateOf(newCategory.keys.first()) }
     val selectedDays = remember { mutableStateMapOf<String, Boolean>() }
-    val selectedColor = remember { mutableStateOf(colorOptions[0]) }
-    val selectedIcon = remember { mutableStateOf(habitIconMap.keys.first()) }
-    var numberOfCompletion by remember { mutableIntStateOf(1) }
-    val isEmpty by remember(title,description) { mutableStateOf(title.isNotEmpty() && description.isNotEmpty()) }
-
-    val coroutineScope = rememberCoroutineScope()
-
 
 
     remainderDays.forEach {
@@ -234,8 +200,6 @@ fun AddHabitScreen(
             selectedDays[it] = false
         }
     }
-
-    var selectedOption by remember { mutableStateOf(0) }
 
 
 
@@ -282,7 +246,7 @@ fun AddHabitScreen(
                             .fillMaxWidth()
                             .padding(vertical = 5.dp),
                         maxLines = 1,
-                        value = title,
+                        value = habitName,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.DriveFileRenameOutline,
@@ -295,7 +259,9 @@ fun AddHabitScreen(
                         label = {
                             Text(text = "Habit Name")
                         },
-                        onValueChange = { title = it },
+                        onValueChange = {
+                            habityStateViewModel.onHabitNameChanged(it)
+                        },
                         shape = RoundedCornerShape(8.dp)
                     )
                 }
@@ -306,7 +272,7 @@ fun AddHabitScreen(
                             .fillMaxWidth()
                             .padding(vertical = 5.dp),
                         maxLines = 1,
-                        value = description,
+                        value = habitDescription,
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Description,
@@ -319,7 +285,9 @@ fun AddHabitScreen(
                         label = {
                             Text(text = "Description")
                         },
-                        onValueChange = { description = it },
+                        onValueChange = {
+                            habityStateViewModel.onHabitDescriptionChanged(it)
+                        },
                         shape = RoundedCornerShape(8.dp)
                     )
                 }
@@ -327,7 +295,6 @@ fun AddHabitScreen(
                 item {
                     Text(
                         modifier = Modifier
-                            // .align(Alignment.Start)
                             .padding(vertical = 5.dp),
                         text = "Streak Goal",
                         style = MaterialTheme.typography.labelLarge
@@ -338,12 +305,16 @@ fun AddHabitScreen(
                     SingleChoiceSegmentedButtonRow(
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        options.forEachIndexed { index, option ->
+                        streakGoalList.forEachIndexed { index, option ->
                             SegmentedButton(
-                                shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
-                                selected = selectedOption == index,
-                                onClick = { selectedOption = index },
-                                label = { Text(text = option) }
+                                shape = SegmentedButtonDefaults.itemShape(index = index, count = streakGoalList.size),
+                                selected = selectedStreakGoal == option,
+                                onClick = {
+                                    habityStateViewModel.setStreakGoal(
+                                        option
+                                    )
+                                },
+                                label = { Text(text = selectedStreakGoal) }
                             )
                         }
                     }
@@ -374,22 +345,21 @@ fun AddHabitScreen(
                                     horizontal = 20.dp
                                 ),
                                 style = MaterialTheme.typography.labelLarge,
-                                text = "$numberOfCompletion/day"
+                                text = "$numberOfCompletions/day"
                             )
 
                         }
                         FilledTonalIconButton(
-                            enabled = numberOfCompletion != 1,
-
+                            enabled = numberOfCompletions != 1,
                             onClick = {
-                            if (numberOfCompletion>1){
-                                numberOfCompletion --
+                            if (numberOfCompletions>1){
+                                habityStateViewModel.decrementNumberOfCompletion()
                             }
                         }) {
                             Icon(imageVector = Icons.Default.Remove, contentDescription = null)
                         }
                         FilledTonalIconButton(onClick = {
-                            numberOfCompletion ++
+                           habityStateViewModel.incrementNumberOfCompletion()
                         }) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = null)
                         }
@@ -399,7 +369,7 @@ fun AddHabitScreen(
                 item {
                     Text(
                         modifier = Modifier
-                            //.align(Alignment.Start)
+
                             .padding(vertical = 5.dp),
                         text = "Reminder",
                         style = MaterialTheme.typography.labelLarge
@@ -410,7 +380,6 @@ fun AddHabitScreen(
                     FlowRow(
                         modifier = Modifier
                             .fillMaxWidth()
-                        //.align(Alignment.CenterHorizontally)
                     ) {
                         remainderDays.forEachIndexed { index, days ->
                             val isSelected = selectedDays[days] == true
@@ -477,51 +446,6 @@ fun AddHabitScreen(
                         modifier = Modifier
                             //.align(Alignment.Start)
                             .padding(vertical = 5.dp),
-                        text = "Select Color",
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
-
-                item {
-                    Box(
-                        modifier = modifier.height(150.dp)
-
-                    ) { LazyVerticalGrid(
-                        columns = GridCells.Fixed(5),
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                         //   .height(120.dp),
-                        userScrollEnabled = true
-                    ) {
-                        items(colorOptions) { color ->
-                            FilledTonalIconButton(
-                                modifier = modifier.padding(horizontal = 4.dp),
-                                onClick = { selectedColor.value = color },
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = color,
-                                    contentColor = color
-                                )
-                            ) {
-                                AnimatedContent(targetState = selectedColor.value == color) {
-                                    if (it) {
-                                        Icon(
-                                            imageVector = Icons.Rounded.CheckCircle,
-                                            contentDescription = null,
-                                            tint = Color.Black
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    }
-                }
-
-                item {
-                    Text(
-                        modifier = Modifier
-                            //.align(Alignment.Start)
-                            .padding(vertical = 5.dp),
                         text = "Select Icon",
                         style = MaterialTheme.typography.labelLarge
                     )
@@ -538,12 +462,13 @@ fun AddHabitScreen(
                            // bottom = 200.dp
                         )
                     ) {
-                        items(habitIconMap.entries.toList()) { entry ->
+                        items(habitIcon.entries.toList()) { entry ->
                             val icon = entry.value
                             FilledIconToggleButton(
                                 modifier = modifier.padding(horizontal = 4.dp),
-                                checked = selectedIcon.value == entry.key,
-                                onCheckedChange = { selectedIcon.value = entry.key }
+                                checked = selectedIcon == entry.key,
+                                onCheckedChange = {
+                                    habityStateViewModel.setHabitIcon(entry.key) }
                             ) {
                                 Icon(imageVector = icon, contentDescription = icon.name)
                             }
@@ -572,26 +497,22 @@ fun AddHabitScreen(
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
             ) {
-                val colorCode = selectedColor.value.toArgb()
 
                Button(
-                   enabled = isEmpty,
+                   enabled = canAddHabit,
                    modifier = modifier
                        .fillMaxWidth()
                        .padding(horizontal = 16.dp),
                    onClick = {
-                       val iconName = selectedIcon.value
-                       val colorCode = selectedColor.value.toArgb()
-                       val  categoryName = selectedChips.value
-
+                       val iconName = selectedIcon
+                       val  categoryName = selectedCategory
                        val newHabit = Habit(
-                           title = title,
-                           description = description,
+                           title = habitName,
+                           description = habitDescription,
                            id = 0,
-                           category = categoryName,
-                           color = colorCode.toString(),
-                           icon = selectedIcon.value,
-                           numberOfCompletion = numberOfCompletion,
+                           category = categoryName.toString(),
+                           icon = selectedIcon,
+                           numberOfCompletion = numberOfCompletions,
                            createdAt = System.currentTimeMillis(),
                        )
 
@@ -637,17 +558,14 @@ fun AddHabitScreen(
                             columns = GridCells.Adaptive(minSize = 100.dp),
 
                             ) {
-                            items(newCategory.entries.toList()) {
+                            items(categoryIconMap.entries.toList()) {
                                     chip ->
                                 val name = chip.key
-                                val chipname =
-
-
                                 InputChip(
                                     modifier = Modifier.padding(horizontal = 3.dp),
-                                    selected = selectedChips.value == chip.key,
+                                    selected = selectedCategory == name,
                                     onClick = {
-                                       selectedChips.value = chip.key
+                                      habityStateViewModel.setHabitCategory(name)
                                     },
                                     label = {
                                         Text(text = name)
