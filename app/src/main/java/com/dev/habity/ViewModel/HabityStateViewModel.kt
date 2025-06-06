@@ -1,5 +1,6 @@
 package com.dev.habity.ViewModel
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessibilityNew
 import androidx.compose.material.icons.filled.Bedtime
@@ -25,9 +26,13 @@ import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material.icons.filled.Straighten
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.ui.graphics.drawscope.DrawContext
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.updateAll
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dev.habity.View.HabityWidget.HabityListWidget.HabityListWidget
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,6 +40,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import java.time.LocalTime
 import javax.inject.Inject
 
 
@@ -171,5 +178,34 @@ class HabityStateViewModel @Inject constructor(
     fun setStreakGoal(goal: String) {
         _streakGoal.value = goal
     }
+
+
+
+    // variable to hold state of the time
+    val timeOptionsMap = mapOf(
+        "Morning" to LocalTime.of(9, 0),        // 9:00 AM
+        "Afternoon" to LocalTime.of(13, 0),     // 1:00 PM
+        "Evening" to LocalTime.of(17, 0),       // 5:00 PM
+        "Night" to LocalTime.of(20, 0),         // 8:00 PM
+        "Before Bed" to LocalTime.of(22, 0),    // 10:00 PM
+        "Custom" to LocalTime.of(0,0)          // Will be user-defined
+    )
+
+
+    private val _timeOptions = MutableStateFlow("Morning")
+    val timeOptions = _timeOptions.asStateFlow()
+
+    private val _customTime = MutableStateFlow<LocalTime?>(null)
+    val customTime = _customTime.asStateFlow()
+    fun changeTime(time: String){
+        _timeOptions.value = time
+    }
+    fun setCustomTime(time: String){
+        _timeOptions.value = time
+        //timeOptionsMap.entries[5]
+    }
+
+
+
 
 }

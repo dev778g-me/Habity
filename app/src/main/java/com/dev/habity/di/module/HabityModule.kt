@@ -1,12 +1,16 @@
 package com.dev.habity.di.module
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.room.Room
+import androidx.work.DefaultWorkerFactory
+import androidx.work.WorkerFactory
 import com.dev.habity.Model.Database.CompletionDao
 import com.dev.habity.Model.Database.HabitDao
 import com.dev.habity.Model.Database.HabitDatabase
 import com.dev.habity.Model.Repo.HabitRepo
 import com.dev.habity.service.notification.HabityNotificationService
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -69,5 +73,7 @@ class HabityModule(
             context = context
         )
     }
+
+
 
 }

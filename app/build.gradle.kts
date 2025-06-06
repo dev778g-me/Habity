@@ -46,6 +46,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.hilt.common)
     val room_version = "2.6.1"
 
     implementation(libs.androidx.core.ktx)
@@ -63,29 +64,37 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("androidx.work:work-runtime-ktx:2.10.1")
+    implementation("androidx.hilt:hilt-work:1.2.0")
 
     implementation(libs.androidx.material.icons.extended)
-    implementation("androidx.compose.material3:material3-android:1.4.0-alpha14")
-    // Remove this: implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    implementation(libs.androidx.material3.android)
+
+    implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.accompanist.flowlayout)
     implementation(libs.kotlinx.serialization.json)
 
-    implementation("dev.chrisbanes.haze:haze:1.6.1")
-    implementation("dev.chrisbanes.haze:haze-materials:1.6.1")
+    implementation(libs.haze)
+    implementation(libs.haze.materials)
 
-    val nav_version = "2.8.9"
     implementation(libs.androidx.navigation.compose)
-    implementation ("androidx.compose.runtime:runtime-livedata:1.8.2")
+    implementation (libs.androidx.runtime.livedata)
 
     // Use KSP instead of KAPT
-    ksp("androidx.hilt:hilt-compiler:1.1.0")
-    ksp("com.google.dagger:hilt-compiler:2.56.2")
+    ksp(libs.androidx.hilt.compiler)
+    ksp(libs.hilt.compiler)
     ksp(libs.androidx.room.compiler)
-    implementation("com.google.dagger:hilt-android:2.56.2")
+    implementation(libs.hilt.android)
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    // jetpack glance
+    // For AppWidgets support
+    implementation (libs.androidx.glance.appwidget)
+
+    // For interop APIs with Material 3
+    implementation (libs.androidx.glance.material3)
+    implementation (libs.compose.charts)
 }

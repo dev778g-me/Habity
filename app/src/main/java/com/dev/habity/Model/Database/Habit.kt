@@ -9,11 +9,11 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.sql.Date
+import java.time.LocalTime
 
 
 @Entity(tableName = "habits")
 data class Habit(
-    
     @PrimaryKey(autoGenerate = true)
     val id : Long,  // id of the habit & also primary key
     val title : String, // title or name of the habit
@@ -21,6 +21,9 @@ data class Habit(
     val category : String, // category of the habit
     val icon : String?, // may be i can add icon (but i will need some type converters ..)
     val numberOfCompletion: Int, // the number of completion in a day for a particular habit
+    val notificationDays : List<Int>,
+    val notificationTime: LocalTime,
+    val streakType: String,// weekly monthly etc
     val createdAt : Long = System.currentTimeMillis()  // time where the habit is created
 )
 
@@ -44,7 +47,9 @@ data class Completion(
     val id : Long, // id of the completion of the habit
     val habitId : Long, // habit id for the foreign key
     val date: Long, // date where the habit started
-    val amountOfCompletions : Int = 0 // amount of completion of the habit
+    val amountOfCompletions : Int = 0 ,// amount of completion of the habit
+    val completionTime : Long,
+
 )
 
 //interval table

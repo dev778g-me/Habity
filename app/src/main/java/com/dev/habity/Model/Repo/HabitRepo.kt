@@ -25,6 +25,15 @@ class HabitRepo @Inject constructor (
           habitDao.getAllHabits()
     }
 
+    suspend fun getHabitsForWorkManager() = withContext(Dispatchers.IO) {
+        habitDao.getHabitsForWorkManager()
+    }
+
+    // function to get a single habit by the id
+   suspend fun fetchHabitById(habitId: Long) : Habit {
+     return habitDao.getHabitById(habitId = habitId)
+    }
+
     // function to insert a habit
     suspend fun insertHabit(habit: Habit) : Long = withContext(Dispatchers.IO){
      return@withContext habitDao.insertHabit(habit = habit)
@@ -40,16 +49,35 @@ class HabitRepo @Inject constructor (
     // [ function of completions and completion dao]
     // function to get and fetch all the completions for a specific habits
 
+   suspend fun fetchCompletionForWidget(habitId: Long, start: Long, end: Long): List<Completion>{
+       return completionDao.getCompletionsBetween(
+           habitId = habitId,
+           start = start,
+           end = end
+       )
+    }
 
     fun fetchCompletions(habitId: Long) : LiveData<List<Completion>>{
         return completionDao.getCompletionForHabit(
             habitId = habitId
         )
     }
-
     // function to insert a completion for a habit into the database
     suspend fun insertCompletions(completion: Completion) = withContext(Dispatchers.IO) {
         completionDao.insertCompletion(
+            completion = completion
+        )
+    }
+
+
+   suspend fun getLatestCompletion(habitId: Long) : Completion{
+        return completionDao.getLatestCompletion(
+            habitId = habitId
+        )
+    }
+
+    suspend fun deleteLatestCompletion(completion: Completion) {
+        completionDao.deleteCompletion(
             completion = completion
         )
     }

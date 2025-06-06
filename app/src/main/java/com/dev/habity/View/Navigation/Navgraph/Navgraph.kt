@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dev.habity.View.Navigation.Routes.Routes
 import com.dev.habity.View.Screens.AddHabitScreen
+import com.dev.habity.View.Screens.AnalyticsScreen
 
 import com.dev.habity.View.Screens.HomeScreen
 import com.dev.habity.ViewModel.HabitDbViewmodel
@@ -28,9 +29,7 @@ fun NavGraph(
     ) {
         composable(Routes.HomeScreen.routes) {
             HomeScreen(
-                onClick = {
-                    navController.navigate(Routes.AddHabitScreen.routes)
-                },
+                navController = navController,
                 context = context
 
             )
@@ -41,6 +40,12 @@ fun NavGraph(
                 onNavigation = {
                     navController.navigateUp()
                 }
+            )
+        }
+
+        composable(Routes.AnalyticsScreen.routes) {
+            AnalyticsScreen(
+                navController = navController
             )
         }
 

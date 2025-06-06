@@ -15,6 +15,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.dev.habity.View.Navigation.Navgraph.NavGraph
 import com.dev.habity.View.Screens.HomeScreen
 import com.dev.habity.ViewModel.HabitDbViewmodel
+import com.dev.habity.service.alarmmanger.HabityAlarmManager
 
 import com.example.compose.HabityTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+
             val viewmodel : HabitDbViewmodel = hiltViewModel()
             HabityTheme{
                 NavGraph(

@@ -18,7 +18,7 @@ class HabityNotificationService(
 
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as  NotificationManager
 
-    fun showNotification(context: Context){
+    fun showNotification(context: Context, message: String){
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             context,
@@ -28,7 +28,7 @@ class HabityNotificationService(
         )
         val notification = NotificationCompat.Builder(context,HABITYNOTIFICATION_ID)
             .setSmallIcon(R.drawable.monochrome)
-            .setContentText("Habity Notification")
+            .setContentText(message)
             .setContentTitle("Habity")
             .setContentInfo("First Notification")
             .setContentIntent(pendingIntent)

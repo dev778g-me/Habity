@@ -11,5 +11,7 @@ sealed class Routes (val routes: String) {
     @Serializable
     data object AddHabitScreen : Routes("add_habit")
 
+    @Serializable
+    data object AnalyticsScreen : Routes("analytics")
 
 }
